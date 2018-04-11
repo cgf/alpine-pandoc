@@ -1,9 +1,8 @@
-# alpine-pandoc
+# fhdo-ti-doc
 
-This is the source code which builds a Docker container comprised of Alpine Linux, [Pandoc], [PlantUML], and [Sphinx]. It is intended to provide an environment which is optimized for generating documentation.
+Dies ist ein Docker Container zum Generieren von Dokumentation, der auf https://github.com/skyzyx/alpine-pandoc basiert.
 
-We use:
-
+Die folgenden Tools sind enthalten:
 * [Pandoc] (Haskell) to convert all [Markdown] into either generated HTML or [reStructuredText] files.
 * [Sphinx] (Python) to convert [reStructuredText] files into generated HTML.
 * [PlantUML] (Java) to convert UML diagrams to SVG images.
