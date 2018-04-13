@@ -1,3 +1,7 @@
+# Test with
+# docker build .
+# docker run -it -v /home/fuehner/git/EduMarkdown:/work 5d
+
 #    graphviz \
 #    openjdk8 \
 #    python \
@@ -12,8 +16,11 @@ RUN apt-get update -y \
     wget \
     ca-certificates \
     libperl5.22 \
+    build-essential \
     python \
+    python-pip \
     python-pygments \
+    python-dev \
     gpp
 
 # Configure timezone and locale, adapted from
@@ -25,6 +32,12 @@ RUN echo "Europe/Berlin" > /etc/timezone && \
     echo 'LANG="de_DE.UTF-8"'>/etc/default/locale && \
     dpkg-reconfigure --frontend=noninteractive locales && \
     update-locale LANG=de_DE.UTF-8
+
+run pip install --upgrade pip && \
+    pip install setuptools wheel && \
+    pip install pandoc-fignos && \
+    pip install pandoc-eqnos && \
+    pip install pandoc-tablenos
 
 # set locale
 #RUN DEBIAN_FRONTEND=noninteractive apt-get install -y locales
