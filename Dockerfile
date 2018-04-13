@@ -1,69 +1,65 @@
-# https://hub.docker.com/r/portown/alpine-pandoc/~/dockerfile/
-#
-# We use:
-# * Pandoc (Haskell) to convert all Markdown into either generated HTML or .rst files.
-# * Sphinx (Python) to convert .rst files into generated HTML.
-# * PlantUML (Java) to convert UML diagrams to SVG images.
-#
+#    graphviz \
+#    openjdk8 \
+#    python \
+#    py2-pip \
 
-FROM alpine:3.6
+FROM ubuntu:16.04
 
-ENV BUILD_DEPS \
-    alpine-sdk \
-    coreutils \
-    ghc \
-    gmp \
-    libffi \
-    linux-headers \
-    musl-dev \
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends \
+    tzdata \
+    locales \
     wget \
-    zlib-dev
-ENV PERSISTENT_DEPS \
-    graphviz \
-    openjdk8 \
+    ca-certificates \
+    libperl5.22 \
     python \
-    py2-pip \
-    sed \
-    ttf-droid \
-    ttf-droid-nonlatin
-ENV EDGE_DEPS cabal
+    python-pygments \
+    gpp
 
-ENV PLANTUML_VERSION 1.2017.18
-ENV PLANTUML_DOWNLOAD_URL https://sourceforge.net/projects/plantuml/files/plantuml.$PLANTUML_VERSION.jar/download
+# Configure timezone and locale, adapted from
+# https://serverfault.com/a/689947/122228
+RUN echo "Europe/Berlin" > /etc/timezone && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    sed -i -e 's/# de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/' /etc/locale.gen && \
+    echo 'LANG="de_DE.UTF-8"'>/etc/default/locale && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=de_DE.UTF-8
 
-ENV PANDOC_VERSION 1.19.2.4
-ENV PANDOC_DOWNLOAD_URL https://hackage.haskell.org/package/pandoc-$PANDOC_VERSION/pandoc-$PANDOC_VERSION.tar.gz
-ENV PANDOC_ROOT /usr/local/pandoc
+# set locale
+#RUN DEBIAN_FRONTEND=noninteractive apt-get install -y locales
+#RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+#    dpkg-reconfigure --frontend=noninteractive locales && \
+#    update-locale LANG=en_US.UTF-8
+#ENV LANG en_US.UTF-8 
 
-ENV PATH $PATH:$PANDOC_ROOT/bin
+# TeX: aus https://github.com/jagregory/pandoc-docker
+RUN apt-get install -y --no-install-recommends \
+    texlive-latex-base \
+    texlive-xetex \
+    latex-xcolor \
+    texlive-math-extra \
+    texlive-latex-extra \
+    texlive-fonts-extra \
+    texlive-bibtex-extra \
+    fontconfig \
+    lmodern
+#RUN apt-get install -y --no-install-recommends texlive-full
 
-# Create Pandoc build space
-RUN mkdir -p /pandoc-build
-WORKDIR /pandoc-build
+RUN wget -O pandoc.deb https://github.com/jgm/pandoc/releases/download/2.1.3/pandoc-2.1.3-1-amd64.deb
+RUN dpkg --install pandoc.deb
+RUN rm -rf pandoc.deb
 
-# Install/Build Packages
-RUN apk upgrade --update && \
-    apk add --no-cache --virtual .build-deps $BUILD_DEPS && \
-    apk add --no-cache --virtual .persistent-deps $PERSISTENT_DEPS && \
-    curl -fsSL "$PLANTUML_DOWNLOAD_URL" -o /usr/local/plantuml.jar && \
-    apk add --no-cache --virtual .edge-deps $EDGE_DEPS -X http://dl-cdn.alpinelinux.org/alpine/edge/community && \
-    curl -fsSL "$PANDOC_DOWNLOAD_URL" | tar -xzf - && \
-        ( cd pandoc-$PANDOC_VERSION && cabal update && cabal install --only-dependencies && \
-        cabal configure --prefix=$PANDOC_ROOT && \
-        cabal build && \
-        cabal copy && \
-        cd .. ) && \
-    rm -Rf pandoc-$PANDOC_VERSION/ && \
-    rm -Rf /root/.cabal/ /root/.ghc/ && \
-    rmdir /pandoc-build && \
-    set -x; \
-    addgroup -g 82 -S www-data; \
-    adduser -u 82 -D -S -G www-data www-data && \
-    mkdir -p /var/docs && \
-    apk del .build-deps .edge-deps
+# from http://jaredmarkell.com/docker-and-locales/
+#RUN locale-gen en_US.UTF-8
+#RUN locale-gen de_DE.UTF-8
+#ENV LANG en_US.UTF-8
+#ENV LANGUAGE en_US.UTF-8
+#ENV LC_ALL en_US.UTF-8
 
-# Set to non root user
-USER www-data
+RUN mkdir -p /work
+WORKDIR /work
+#ADD directory1 /var/www/directory1
+#CMD /bin/sh
 
-# Reset the work dir
-WORKDIR /var/docs
+
