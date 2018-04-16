@@ -34,8 +34,8 @@ RUN echo "Europe/Berlin" > /etc/timezone && \
     dpkg-reconfigure --frontend=noninteractive locales && \
     update-locale LANG=de_DE.UTF-8
 
-run pip install --upgrade pip && \
-    pip install setuptools wheel && \
+#run pip install --upgrade pip && \
+run    pip install setuptools wheel && \
     pip install pandoc-fignos && \
     pip install pandoc-eqnos && \
     pip install pandoc-tablenos
