@@ -19,6 +19,7 @@ RUN apt-get update -y \
     build-essential \
     python \
     python-pip \
+    python-yaml \
     python-pygments \
     python-dev \
     gpp
