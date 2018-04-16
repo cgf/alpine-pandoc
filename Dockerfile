@@ -56,6 +56,7 @@ RUN apt-get install -y --no-install-recommends \
     texlive-latex-extra \
     texlive-fonts-extra \
     texlive-bibtex-extra \
+    texlive-lang-german \
     fontconfig \
     lmodern
 #RUN apt-get install -y --no-install-recommends texlive-full
