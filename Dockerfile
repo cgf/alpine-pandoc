@@ -59,18 +59,14 @@ RUN apt-get install -y --no-install-recommends \
     texlive-lang-german \
     fontconfig \
     lmodern
-#RUN apt-get install -y --no-install-recommends texlive-full
 
 RUN wget -O pandoc.deb https://github.com/jgm/pandoc/releases/download/2.1.3/pandoc-2.1.3-1-amd64.deb
 RUN dpkg --install pandoc.deb
 RUN rm -rf pandoc.deb
 
-# from http://jaredmarkell.com/docker-and-locales/
-#RUN locale-gen en_US.UTF-8
-#RUN locale-gen de_DE.UTF-8
-#ENV LANG en_US.UTF-8
-#ENV LANGUAGE en_US.UTF-8
-#ENV LC_ALL en_US.UTF-8
+# Add Jekyll
+RUN apt-get install -< --no-install-recommends ruby ruby-dev make build-essential && \
+    gem install jekyll bundler
 
 RUN mkdir -p /work
 WORKDIR /work
