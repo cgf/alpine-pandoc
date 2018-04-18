@@ -73,5 +73,3 @@ WORKDIR /work
 #ADD directory1 /var/www/directory1
 #CMD /bin/sh
 
-
-
