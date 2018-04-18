@@ -65,8 +65,13 @@ RUN dpkg --install pandoc.deb
 RUN rm -rf pandoc.deb
 
 # Add Jekyll
-RUN apt-get install -< --no-install-recommends ruby ruby-dev make build-essential && \
+RUN apt-get install -y --no-install-recommends ruby ruby-dev make build-essential zlib1g-dev && \
     gem install jekyll bundler
+
+# Set default locale for the environment
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
+ENV LANGUAGE C.UTF-8
 
 RUN mkdir -p /work
 WORKDIR /work
